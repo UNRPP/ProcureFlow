@@ -23,6 +23,10 @@ export type CaseListItem = ProcurementCase & {
   owner: Pick<Profile, "id" | "full_name"> | null;
   responsibleUser: Pick<Profile, "id" | "full_name"> | null;
   responsibleDepartment: MasterDataRecord | null;
+  currentStage: Pick<
+    Database["public"]["Tables"]["case_stage_instances"]["Row"],
+    "id" | "name_en" | "name_th" | "due_at"
+  > | null;
 };
 
 export type MyWorkItem = CaseListItem & {
@@ -130,6 +134,7 @@ function lookup<T extends { id: string }>(records: T[]): Map<string, T> {
 function decorateCases(
   cases: ProcurementCase[],
   options: CaseFormOptions,
+  stages: Map<string, CaseListItem["currentStage"]> = new Map(),
 ): CaseListItem[] {
   const workCategories = lookup(options.workCategories);
   const departments = lookup(options.departments);
@@ -157,6 +162,9 @@ function decorateCases(
     responsibleDepartment: procurementCase.current_responsible_department_id
       ? (departments.get(procurementCase.current_responsible_department_id) ??
         null)
+      : null,
+    currentStage: procurementCase.current_stage_instance_id
+      ? (stages.get(procurementCase.current_stage_instance_id) ?? null)
       : null,
   }));
 }
@@ -261,9 +269,33 @@ export async function listCases(
     return { status: "unavailable" };
   }
 
+  const stageIds = [
+    ...new Set(
+      ((data ?? []) as ProcurementCase[])
+        .map((item) => item.current_stage_instance_id)
+        .filter((id): id is string => id !== null),
+    ),
+  ];
+  const stagesResult = stageIds.length
+    ? await supabase
+        .from("case_stage_instances")
+        .select("id, name_en, name_th, due_at")
+        .in("id", stageIds)
+    : { data: [], error: null };
+  if (stagesResult.error) {
+    logServerError("case.list_stages_query_failed", stagesResult.error);
+    return { status: "unavailable" };
+  }
+
   return {
     status: "ready",
-    data: decorateCases((data ?? []) as ProcurementCase[], options),
+    data: decorateCases(
+      (data ?? []) as ProcurementCase[],
+      options,
+      new Map<string, CaseListItem["currentStage"]>(
+        (stagesResult.data ?? []).map((stage) => [stage.id, stage]),
+      ),
+    ),
     total: count ?? 0,
     page: normalized.page,
     pageSize: normalized.pageSize,

@@ -55,6 +55,7 @@ const row: CaseListItem = {
   owner: { id: "u1", full_name: "Narin Wongsa" },
   responsibleUser: null,
   responsibleDepartment: null,
+  currentStage: null,
 };
 
 describe("case-status exports", () => {

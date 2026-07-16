@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { differenceInCalendarDays } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
@@ -91,6 +92,17 @@ export function CaseTable({ cases, locale, messages, query }: Props) {
       ),
     }),
     columnHelper.display({
+      id: "currentStage",
+      header: messages.workflows.currentStage,
+      cell: (info) => (
+        <CurrentStageCell
+          stage={info.row.original.currentStage}
+          locale={locale}
+          messages={messages}
+        />
+      ),
+    }),
+    columnHelper.display({
       id: "procurementType",
       header: t.fields.procurementType,
       cell: (info) => name(info.row.original.procurementType),
@@ -146,7 +158,7 @@ export function CaseTable({ cases, locale, messages, query }: Props) {
   return (
     <>
       <div className="bg-card hidden overflow-x-auto rounded-2xl border md:block">
-        <table className="w-full min-w-[64rem] text-left text-sm">
+        <table className="w-full min-w-[72rem] text-left text-sm">
           <caption className="sr-only">
             {messages.pages.cases.description}
           </caption>
@@ -205,6 +217,18 @@ export function CaseTable({ cases, locale, messages, query }: Props) {
             <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
               <div>
                 <dt className="text-muted-foreground text-xs">
+                  {messages.workflows.currentStage}
+                </dt>
+                <dd className="mt-0.5">
+                  <CurrentStageCell
+                    stage={item.currentStage}
+                    locale={locale}
+                    messages={messages}
+                  />
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground text-xs">
                   {t.fields.workCategory}
                 </dt>
                 <dd className="mt-0.5">{name(item.workCategory)}</dd>
@@ -241,4 +265,41 @@ export function CaseTable({ cases, locale, messages, query }: Props) {
       </div>
     </>
   );
+}
+
+function CurrentStageCell({
+  stage,
+  locale,
+  messages,
+}: {
+  stage: CaseListItem["currentStage"];
+  locale: Locale;
+  messages: Messages;
+}) {
+  if (!stage) {
+    return (
+      <span className="text-muted-foreground">
+        {messages.common.notProvided}
+      </span>
+    );
+  }
+  const stageName = locale === "th" ? stage.name_th : stage.name_en;
+  return (
+    <div className="min-w-32">
+      <p className="font-medium">{stageName}</p>
+      <p className="text-muted-foreground mt-0.5 text-xs tabular-nums">
+        {stageDueLabel(stage.due_at, messages)}
+      </p>
+    </div>
+  );
+}
+
+function stageDueLabel(value: string | null, messages: Messages) {
+  if (!value) return messages.common.notProvided;
+  const days = differenceInCalendarDays(new Date(value), new Date());
+  if (days < 0) {
+    return messages.workflows.overdue.replace("{days}", String(Math.abs(days)));
+  }
+  if (days === 0) return messages.workflows.dueToday;
+  return messages.workflows.dueIn.replace("{days}", String(days));
 }

@@ -634,6 +634,7 @@
     },
     "overdue": "{days} days overdue",
     "dueToday": "Due today",
+    "dueIn": "Due in {days} days",
     "messages": {
       "saved": "Workflow configuration saved.",
       "duplicated": "A new draft version was created.",
