@@ -89,6 +89,18 @@ export default async function CasesPage({
         />
       ) : null}
 
+      {dashboardFilter ? (
+        <Alert className="border-info/30 bg-info/8 mb-5">
+          <DatabaseZap className="text-info-foreground" />
+          <AlertTitle>
+            {messages.pages.cases.dashboardFilters[dashboardFilter].title}
+          </AlertTitle>
+          <AlertDescription>
+            {messages.pages.cases.dashboardFilters[dashboardFilter].description}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       {result.status === "unavailable" ? (
         <Alert variant="destructive">
           <DatabaseZap />

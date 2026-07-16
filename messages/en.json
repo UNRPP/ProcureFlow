@@ -149,7 +149,33 @@
       "title": "All Cases",
       "description": "Search and manage procurement work across the hospital",
       "emptyTitle": "No cases match these filters",
-      "emptyDescription": "Adjust the filters or create the first procurement case."
+      "emptyDescription": "Adjust the filters or create the first procurement case.",
+      "dashboardFilters": {
+        "active": {
+          "title": "Dashboard filter: Active cases",
+          "description": "Showing cases with an active procurement status."
+        },
+        "overdue": {
+          "title": "Dashboard filter: Overdue cases",
+          "description": "A case is overdue when its current workflow-stage due date has passed. If it has no active stage, its target completion date is used."
+        },
+        "due_soon": {
+          "title": "Dashboard filter: Due within 7 days",
+          "description": "This uses the current workflow-stage due date. The Target completion date column is the overall case target and may be later."
+        },
+        "unassigned": {
+          "title": "Dashboard filter: Unassigned cases",
+          "description": "Showing active or on-hold cases with no current responsible user or department."
+        },
+        "completed_month": {
+          "title": "Dashboard filter: Completed this month",
+          "description": "Showing cases completed since the start of the current month."
+        },
+        "active_value": {
+          "title": "Dashboard filter: Active estimated value",
+          "description": "Showing active cases, ordered by estimated value."
+        }
+      }
     },
     "calendar": {
       "title": "Calendar",
