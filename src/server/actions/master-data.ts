@@ -37,6 +37,16 @@ export async function manageDemoDataAction(
     });
     return { status: "error", message: messages.settings.demoFailed };
   }
+  if (operation === "seed") {
+    const initialization = await supabase.rpc("initialize_demo_workflows");
+    if (initialization.error) {
+      logServerError(
+        "demo_data.workflow_initialization_failed",
+        initialization.error,
+      );
+      return { status: "error", message: messages.settings.demoFailed };
+    }
+  }
   revalidatePath("/");
   revalidatePath("/dashboard");
   revalidatePath("/cases");

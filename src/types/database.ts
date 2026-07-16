@@ -690,6 +690,10 @@ export type Database = {
         Args: Record<string, never>;
         Returns: number;
       };
+      initialize_demo_workflows: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
       is_active_user: {
         Args: Record<string, never>;
         Returns: boolean;
