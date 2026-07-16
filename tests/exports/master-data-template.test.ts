@@ -13,13 +13,8 @@ describe("master-data import templates", () => {
       "Instructions",
     ]);
     const importSheet = workbook.getWorksheet("Import")!;
-    expect((importSheet.getRow(1).values as ExcelJS.CellValue[]).slice(1)).toEqual([
-      "code",
-      "name_en",
-      "name_th",
-      "year",
-      "starts_on",
-      "ends_on",
-    ]);
+    expect(
+      (importSheet.getRow(1).values as ExcelJS.CellValue[]).slice(1),
+    ).toEqual(["code", "name_en", "name_th", "year", "starts_on", "ends_on"]);
   });
 });
