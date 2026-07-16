@@ -128,7 +128,8 @@
     "ownedCases": "Owned",
     "actionRequired": "Action required",
     "overdueDays": "{days} days",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "viewCases": "View cases: {title}"
   },
   "pages": {
     "myWork": {

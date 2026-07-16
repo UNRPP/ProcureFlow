@@ -47,11 +47,29 @@ export type CaseListFilters = {
   procurementTypeId?: string;
   fiscalYearId?: string;
   ownerId?: string;
+  dashboardFilter?: DashboardCaseFilter | "";
   sort?: CaseSortField;
   direction?: "asc" | "desc";
   page?: number;
   pageSize?: number;
 };
+
+export const dashboardCaseFilters = [
+  "active",
+  "overdue",
+  "due_soon",
+  "unassigned",
+  "completed_month",
+  "active_value",
+] as const;
+
+export type DashboardCaseFilter = (typeof dashboardCaseFilters)[number];
+
+export function isDashboardCaseFilter(
+  value: string,
+): value is DashboardCaseFilter {
+  return dashboardCaseFilters.includes(value as DashboardCaseFilter);
+}
 
 export type CaseSortField =
   | "case_number"
@@ -213,6 +231,19 @@ export async function listCases(
   if (filters.fiscalYearId)
     query = query.eq("fiscal_year_id", filters.fiscalYearId);
   if (filters.ownerId) query = query.eq("case_owner_id", filters.ownerId);
+  if (filters.dashboardFilter) {
+    const dashboardCases = await supabase.rpc("dashboard_case_ids", {
+      filter_key: filters.dashboardFilter,
+    });
+    if (dashboardCases.error) {
+      logServerError("case.dashboard_filter_failed", dashboardCases.error);
+      return { status: "unavailable" };
+    }
+    query = query.in(
+      "id",
+      (dashboardCases.data ?? []).map((item) => item.case_id),
+    );
+  }
 
   const start = (normalized.page - 1) * normalized.pageSize;
   const [{ data, error, count }, options] = await Promise.all([
@@ -262,6 +293,16 @@ export async function listCasesForExport(
   if (filters.fiscalYearId)
     query = query.eq("fiscal_year_id", filters.fiscalYearId);
   if (filters.ownerId) query = query.eq("case_owner_id", filters.ownerId);
+  if (filters.dashboardFilter) {
+    const dashboardCases = await supabase.rpc("dashboard_case_ids", {
+      filter_key: filters.dashboardFilter,
+    });
+    if (dashboardCases.error) return null;
+    query = query.in(
+      "id",
+      (dashboardCases.data ?? []).map((item) => item.case_id),
+    );
+  }
 
   const [{ data, error }, options] = await Promise.all([
     query

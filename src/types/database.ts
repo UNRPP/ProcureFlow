@@ -690,6 +690,10 @@ export type Database = {
         Args: Record<string, never>;
         Returns: number;
       };
+      dashboard_case_ids: {
+        Args: { filter_key: string };
+        Returns: { case_id: string }[];
+      };
       initialize_demo_workflows: {
         Args: Record<string, never>;
         Returns: number;

@@ -128,7 +128,8 @@
     "ownedCases": "เป็นเจ้าของ",
     "actionRequired": "ต้องดำเนินการ",
     "overdueDays": "{days} วัน",
-    "viewAll": "ดูทั้งหมด"
+    "viewAll": "ดูทั้งหมด",
+    "viewCases": "ดูงาน: {title}"
   },
   "pages": {
     "myWork": {

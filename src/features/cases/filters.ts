@@ -1,4 +1,5 @@
 import {
+  isDashboardCaseFilter,
   isCaseStatus,
   type CaseListFilters,
   type CaseSortField,
@@ -19,6 +20,7 @@ export function caseFiltersFromSearchParams(
 ): Omit<CaseListFilters, "page" | "pageSize"> {
   const statusValue = searchParams.get("status") ?? "";
   const sortValue = searchParams.get("sort") as CaseSortField | null;
+  const dashboardValue = searchParams.get("dashboard") ?? "";
   return {
     search: searchParams.get("search") ?? "",
     status: isCaseStatus(statusValue) ? statusValue : "",
@@ -26,6 +28,9 @@ export function caseFiltersFromSearchParams(
     procurementTypeId: searchParams.get("procurementType") ?? "",
     fiscalYearId: searchParams.get("fiscalYear") ?? "",
     ownerId: searchParams.get("owner") ?? "",
+    dashboardFilter: isDashboardCaseFilter(dashboardValue)
+      ? dashboardValue
+      : "",
     sort:
       sortValue && sortFields.includes(sortValue) ? sortValue : "created_at",
     direction: searchParams.get("direction") === "asc" ? "asc" : "desc",

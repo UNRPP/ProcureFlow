@@ -11,6 +11,7 @@ import { getI18n } from "@/lib/i18n/server";
 import { canCreateCase } from "@/lib/permissions/cases";
 import {
   getCaseFormOptions,
+  isDashboardCaseFilter,
   isCaseStatus,
   listCases,
   type CaseSortField,
@@ -47,6 +48,10 @@ export default async function CasesPage({
     : "created_at";
   const direction = query.direction === "asc" ? "asc" : "desc";
   const page = Math.max(Number.parseInt(query.page ?? "1", 10) || 1, 1);
+  const dashboardValue = query.dashboard ?? "";
+  const dashboardFilter = isDashboardCaseFilter(dashboardValue)
+    ? dashboardValue
+    : "";
 
   const [{ locale, messages }, options, currentUser, result] =
     await Promise.all([
@@ -60,6 +65,7 @@ export default async function CasesPage({
         procurementTypeId: query.procurementType,
         fiscalYearId: query.fiscalYear,
         ownerId: query.owner,
+        dashboardFilter,
         sort,
         direction,
         page,

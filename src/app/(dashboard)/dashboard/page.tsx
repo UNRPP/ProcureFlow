@@ -21,14 +21,22 @@ function KpiCard({
   value,
   icon: Icon,
   tone,
+  href,
+  actionLabel,
 }: {
   title: string;
   value: string;
   icon: typeof BriefcaseBusiness;
   tone: string;
+  href: string;
+  actionLabel: string;
 }) {
   return (
-    <article className="bg-card border-border rounded-2xl border p-4 shadow-sm">
+    <Link
+      href={href}
+      aria-label={actionLabel}
+      className="bg-card border-border group hover:border-primary/35 focus-visible:ring-ring/50 block rounded-2xl border p-4 shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-3 focus-visible:outline-none"
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-muted-foreground text-xs font-medium">{title}</p>
@@ -36,11 +44,13 @@ function KpiCard({
             {value}
           </p>
         </div>
-        <span className={`rounded-xl p-2.5 ${tone}`}>
+        <span
+          className={`rounded-xl p-2.5 transition-transform duration-200 group-hover:scale-105 ${tone}`}
+        >
           <Icon className="size-5" aria-hidden="true" />
         </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
@@ -70,30 +80,35 @@ export default async function DashboardPage() {
       value: formatNumber(Number(report.summary.active_cases), locale),
       icon: BriefcaseBusiness,
       tone: "bg-primary/10 text-primary",
+      href: "/cases?dashboard=active",
     },
     {
       title: t.kpis.overdue,
       value: formatNumber(Number(report.summary.overdue_cases), locale),
       icon: CircleAlert,
       tone: "bg-destructive/10 text-destructive",
+      href: "/cases?dashboard=overdue",
     },
     {
       title: t.kpis.dueSoon,
       value: formatNumber(Number(report.summary.due_soon), locale),
       icon: CalendarClock,
       tone: "bg-warning/15 text-warning-foreground",
+      href: "/cases?dashboard=due_soon",
     },
     {
       title: t.kpis.unassigned,
       value: formatNumber(Number(report.summary.unassigned_cases), locale),
       icon: UserRoundX,
       tone: "bg-chart-5/10 text-chart-5",
+      href: "/cases?dashboard=unassigned",
     },
     {
       title: t.kpis.completedMonth,
       value: formatNumber(Number(report.summary.completed_this_month), locale),
       icon: CheckCircle2,
       tone: "bg-success/12 text-success-foreground",
+      href: "/cases?dashboard=completed_month",
     },
     {
       title: t.kpis.activeValue,
@@ -109,6 +124,7 @@ export default async function DashboardPage() {
       ),
       icon: BadgeDollarSign,
       tone: "bg-info/10 text-info-foreground",
+      href: "/cases?dashboard=active_value&sort=estimated_value&direction=desc",
     },
   ];
 
@@ -129,7 +145,11 @@ export default async function DashboardPage() {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         {kpis.map((kpi) => (
-          <KpiCard key={kpi.title} {...kpi} />
+          <KpiCard
+            key={kpi.title}
+            {...kpi}
+            actionLabel={t.viewCases.replace("{title}", kpi.title)}
+          />
         ))}
       </section>
 
