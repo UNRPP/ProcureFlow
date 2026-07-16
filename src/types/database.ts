@@ -682,6 +682,14 @@ export type Database = {
         Args: { target_table: string; import_rows: Record<string, unknown>[] };
         Returns: number;
       };
+      seed_demo_data: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      clear_demo_data: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
       is_active_user: {
         Args: Record<string, never>;
         Returns: boolean;

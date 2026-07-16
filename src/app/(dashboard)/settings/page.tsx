@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/layout/page-header";
 import { MasterDataList } from "@/components/settings/master-data-list";
+import { DemoDataControls } from "@/components/settings/demo-data-controls";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { getI18n } from "@/lib/i18n/server";
@@ -32,15 +33,15 @@ export default async function SettingsPage() {
       </Alert>
 
       {currentUser?.roles.includes("super_admin") ? (
-        <div className="mb-5 flex justify-end">
-          <Link
-            href="/settings/workflows"
-            className={buttonVariants({ variant: "outline" })}
-          >
-            <GitBranch />
-            {messages.workflows.manageLink}
-          </Link>
-        </div>
+        <>
+          <div className="mb-5 flex justify-end">
+            <Link href="/settings/workflows" className={buttonVariants({ variant: "outline" })}>
+              <GitBranch />
+              {messages.workflows.manageLink}
+            </Link>
+          </div>
+          <DemoDataControls messages={messages} />
+        </>
       ) : null}
 
       <div className="mb-4">

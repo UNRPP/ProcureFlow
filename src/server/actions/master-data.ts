@@ -16,6 +16,37 @@ import { getCurrentProfile } from "@/server/queries/profile";
 export type MasterDataActionState =
   { status: "success"; message: string } | { status: "error"; message: string };
 
+export async function manageDemoDataAction(
+  operation: "seed" | "clear",
+): Promise<MasterDataActionState> {
+  const [{ messages }, currentUser] = await Promise.all([getI18n(), getCurrentProfile()]);
+  if (!currentUser?.roles.includes("super_admin")) {
+    return { status: "error", message: messages.cases.errors.unauthorized };
+  }
+  const supabase = await createClient();
+  const result = await supabase.rpc(operation === "seed" ? "seed_demo_data" : "clear_demo_data");
+  if (result.error) {
+    logServerError("demo_data.manage_failed", result.error, {
+      operation,
+      databaseMessage: result.error.message,
+    });
+    return { status: "error", message: messages.settings.demoFailed };
+  }
+  revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/cases");
+  revalidatePath("/my-work");
+  revalidatePath("/calendar");
+  revalidatePath("/reports");
+  revalidatePath("/settings");
+  return {
+    status: "success",
+    message: operation === "seed"
+      ? messages.settings.demoSeeded.replace("{count}", String(result.data))
+      : messages.settings.demoCleared.replace("{count}", String(result.data)),
+  };
+}
+
 export type MasterDataInput = {
   table: EditableMasterDataTable;
   code: string;
