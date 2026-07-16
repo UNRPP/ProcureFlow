@@ -14,15 +14,24 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const table = url.searchParams.get("table") ?? "";
   if (!isEditableMasterDataTable(table)) {
-    return NextResponse.json({ error: "Unsupported template" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Unsupported template" },
+      { status: 400 },
+    );
   }
   const requestedLocale = url.searchParams.get("locale");
-  const locale = isLocale(requestedLocale) ? requestedLocale : await getLocale();
+  const locale = isLocale(requestedLocale)
+    ? requestedLocale
+    : await getLocale();
   const buffer = await buildMasterDataTemplate(table, locale);
-  const body = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+  const body = buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength,
+  ) as ArrayBuffer;
   return new NextResponse(body, {
     headers: {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="procureflow-${table}-template.xlsx"`,
       "Cache-Control": "private, no-store",
     },

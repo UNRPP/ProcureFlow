@@ -19,12 +19,17 @@ export type MasterDataActionState =
 export async function manageDemoDataAction(
   operation: "seed" | "clear",
 ): Promise<MasterDataActionState> {
-  const [{ messages }, currentUser] = await Promise.all([getI18n(), getCurrentProfile()]);
+  const [{ messages }, currentUser] = await Promise.all([
+    getI18n(),
+    getCurrentProfile(),
+  ]);
   if (!currentUser?.roles.includes("super_admin")) {
     return { status: "error", message: messages.cases.errors.unauthorized };
   }
   const supabase = await createClient();
-  const result = await supabase.rpc(operation === "seed" ? "seed_demo_data" : "clear_demo_data");
+  const result = await supabase.rpc(
+    operation === "seed" ? "seed_demo_data" : "clear_demo_data",
+  );
   if (result.error) {
     logServerError("demo_data.manage_failed", result.error, {
       operation,
@@ -41,9 +46,10 @@ export async function manageDemoDataAction(
   revalidatePath("/settings");
   return {
     status: "success",
-    message: operation === "seed"
-      ? messages.settings.demoSeeded.replace("{count}", String(result.data))
-      : messages.settings.demoCleared.replace("{count}", String(result.data)),
+    message:
+      operation === "seed"
+        ? messages.settings.demoSeeded.replace("{count}", String(result.data))
+        : messages.settings.demoCleared.replace("{count}", String(result.data)),
   };
 }
 
@@ -59,44 +65,92 @@ export type MasterDataInput = {
 
 function cellText(value: ExcelJS.CellValue): string {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
-  if (typeof value === "object" && value && "text" in value) return String(value.text).trim();
+  if (typeof value === "object" && value && "text" in value)
+    return String(value.text).trim();
   return String(value ?? "").trim();
 }
 
-export async function importMasterDataAction(formData: FormData): Promise<MasterDataActionState> {
-  const [{ messages }, currentUser] = await Promise.all([getI18n(), getCurrentProfile()]);
-  if (!currentUser?.roles.includes("super_admin")) return { status: "error", message: messages.cases.errors.unauthorized };
+export async function importMasterDataAction(
+  formData: FormData,
+): Promise<MasterDataActionState> {
+  const [{ messages }, currentUser] = await Promise.all([
+    getI18n(),
+    getCurrentProfile(),
+  ]);
+  if (!currentUser?.roles.includes("super_admin"))
+    return { status: "error", message: messages.cases.errors.unauthorized };
   const table = String(formData.get("table") ?? "");
   const file = formData.get("file");
-  if (!isEditableMasterDataTable(table) || !(file instanceof File) || file.size === 0 || file.size > 1024 * 1024) {
+  if (
+    !isEditableMasterDataTable(table) ||
+    !(file instanceof File) ||
+    file.size === 0 ||
+    file.size > 1024 * 1024
+  ) {
     return { status: "error", message: messages.settings.importInvalid };
   }
   try {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(await file.arrayBuffer());
     const sheet = workbook.getWorksheet("Import");
-    const headers = table === "fiscal_years" ? ["code", "name_en", "name_th", "year", "starts_on", "ends_on"] : ["code", "name_en", "name_th"];
-    if (!sheet || headers.some((header, index) => cellText(sheet.getRow(1).getCell(index + 1).value) !== header)) {
+    const headers =
+      table === "fiscal_years"
+        ? ["code", "name_en", "name_th", "year", "starts_on", "ends_on"]
+        : ["code", "name_en", "name_th"];
+    if (
+      !sheet ||
+      headers.some(
+        (header, index) =>
+          cellText(sheet.getRow(1).getCell(index + 1).value) !== header,
+      )
+    ) {
       return { status: "error", message: messages.settings.importInvalid };
     }
     const rows: Record<string, unknown>[] = [];
     for (let index = 2; index <= sheet.rowCount; index += 1) {
-      const values = headers.map((_, column) => cellText(sheet.getRow(index).getCell(column + 1).value));
+      const values = headers.map((_, column) =>
+        cellText(sheet.getRow(index).getCell(column + 1).value),
+      );
       if (values.every((value) => !value)) continue;
-      if (values.some((value) => !value) || (table === "fiscal_years" && (!/^FY\d{4}$/.test(values[0] ?? "") || !/^\d{4}$/.test(values[3] ?? "") || !/^\d{4}-\d{2}-\d{2}$/.test(values[4] ?? "") || !/^\d{4}-\d{2}-\d{2}$/.test(values[5] ?? "")))) {
+      if (
+        values.some((value) => !value) ||
+        (table === "fiscal_years" &&
+          (!/^FY\d{4}$/.test(values[0] ?? "") ||
+            !/^\d{4}$/.test(values[3] ?? "") ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(values[4] ?? "") ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(values[5] ?? "")))
+      ) {
         return { status: "error", message: messages.settings.importInvalid };
       }
-      rows.push(Object.fromEntries(headers.map((header, column) => [header, header === "year" ? Number(values[column]) : values[column]])));
+      rows.push(
+        Object.fromEntries(
+          headers.map((header, column) => [
+            header,
+            header === "year" ? Number(values[column]) : values[column],
+          ]),
+        ),
+      );
     }
-    if (rows.length === 0 || rows.length > 500) return { status: "error", message: messages.settings.importInvalid };
+    if (rows.length === 0 || rows.length > 500)
+      return { status: "error", message: messages.settings.importInvalid };
     const supabase = await createClient();
-    const result = await supabase.rpc("import_master_data_batch", { target_table: table, import_rows: rows });
+    const result = await supabase.rpc("import_master_data_batch", {
+      target_table: table,
+      import_rows: rows,
+    });
     if (result.error) {
       logServerError("master_data.import_failed", result.error);
       return { status: "error", message: messages.settings.importFailed };
     }
-    revalidatePath("/settings"); revalidatePath("/cases");
-    return { status: "success", message: messages.settings.imported.replace("{count}", String(result.data)) };
+    revalidatePath("/settings");
+    revalidatePath("/cases");
+    return {
+      status: "success",
+      message: messages.settings.imported.replace(
+        "{count}",
+        String(result.data),
+      ),
+    };
   } catch (error) {
     logServerError("master_data.import_parse_failed", error);
     return { status: "error", message: messages.settings.importInvalid };

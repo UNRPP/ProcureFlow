@@ -70,7 +70,10 @@ export async function signIn(
       .single();
 
     if (profileError || !profile) {
-      console.error("Unable to resolve the signed-in user profile", profileError);
+      console.error(
+        "Unable to resolve the signed-in user profile",
+        profileError,
+      );
       await supabase.auth.signOut();
       return { error: "serviceUnavailable" };
     }

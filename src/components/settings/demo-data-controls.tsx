@@ -24,24 +24,47 @@ export function DemoDataControls({ messages }: { messages: Messages }) {
   }
 
   return (
-    <section className="mb-5 rounded-xl border border-dashed bg-muted/25 p-4">
+    <section className="bg-muted/25 mb-5 rounded-xl border border-dashed p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold">{t.demoTitle}</h2>
-          <p className="text-muted-foreground mt-1 max-w-2xl text-sm">{t.demoDescription}</p>
+          <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
+            {t.demoDescription}
+          </p>
         </div>
         <div className="flex shrink-0 gap-2">
-          <Button size="sm" onClick={() => run("seed")} disabled={pending !== null}>
-            {pending === "seed" ? <LoaderCircle className="animate-spin" /> : <DatabaseZap />}
+          <Button
+            size="sm"
+            onClick={() => run("seed")}
+            disabled={pending !== null}
+          >
+            {pending === "seed" ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              <DatabaseZap />
+            )}
             {t.seedDemo}
           </Button>
-          <Button size="sm" variant="outline" onClick={() => run("clear")} disabled={pending !== null}>
-            {pending === "clear" ? <LoaderCircle className="animate-spin" /> : <Trash2 />}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => run("clear")}
+            disabled={pending !== null}
+          >
+            {pending === "clear" ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              <Trash2 />
+            )}
             {t.clearDemo}
           </Button>
         </div>
       </div>
-      {notice ? <p className="text-muted-foreground mt-3 text-sm" role="status">{notice}</p> : null}
+      {notice ? (
+        <p className="text-muted-foreground mt-3 text-sm" role="status">
+          {notice}
+        </p>
+      ) : null}
     </section>
   );
 }

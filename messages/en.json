@@ -654,15 +654,15 @@
     "import": "Import workbook",
     "importInvalid": "Use the downloaded template and provide up to 500 complete valid rows.",
     "importFailed": "The import could not be completed. No rows were added.",
-    "imported": "Imported {count} master-data records."
-    ,"demoTitle": "Demo acceptance data"
-    ,"demoDescription": "Creates clearly marked DEMO cases, supporting master data, and a short test workflow. Clear removes only DEMO cases and their app records; master data remains to preserve any records you create from it."
-    ,"seedDemo": "Seed demo data"
-    ,"clearDemo": "Clear demo cases"
-    ,"confirmClearDemo": "Clear all DEMO cases and their related app records? This cannot be undone."
-    ,"demoSeeded": "Created {count} new demo cases. Existing DEMO cases were kept."
-    ,"demoCleared": "Cleared {count} demo cases."
-    ,"demoFailed": "Demo data could not be changed."
+    "imported": "Imported {count} master-data records.",
+    "demoTitle": "Demo acceptance data",
+    "demoDescription": "Creates clearly marked DEMO cases, supporting master data, and a short test workflow. Clear removes only DEMO cases and their app records; master data remains to preserve any records you create from it.",
+    "seedDemo": "Seed demo data",
+    "clearDemo": "Clear demo cases",
+    "confirmClearDemo": "Clear all DEMO cases and their related app records? This cannot be undone.",
+    "demoSeeded": "Created {count} new demo cases. Existing DEMO cases were kept.",
+    "demoCleared": "Cleared {count} demo cases.",
+    "demoFailed": "Demo data could not be changed."
   },
   "masterData": {
     "workCategories": "Work categories",

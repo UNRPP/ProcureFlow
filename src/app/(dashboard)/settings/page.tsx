@@ -35,7 +35,10 @@ export default async function SettingsPage() {
       {currentUser?.roles.includes("super_admin") ? (
         <>
           <div className="mb-5 flex justify-end">
-            <Link href="/settings/workflows" className={buttonVariants({ variant: "outline" })}>
+            <Link
+              href="/settings/workflows"
+              className={buttonVariants({ variant: "outline" })}
+            >
               <GitBranch />
               {messages.workflows.manageLink}
             </Link>

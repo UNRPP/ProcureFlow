@@ -79,7 +79,9 @@ export function MasterDataList({
   const router = useRouter();
   const [creating, setCreating] = useState<CatalogKey | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const [importFiles, setImportFiles] = useState<Partial<Record<CatalogKey, File>>>({});
+  const [importFiles, setImportFiles] = useState<
+    Partial<Record<CatalogKey, File>>
+  >({});
   const [notice, setNotice] = useState<{
     kind: "success" | "error";
     message: string;
@@ -140,14 +142,27 @@ export function MasterDataList({
     if (result.status === "success") router.refresh();
   }
 
-  async function importRecords(table: EditableMasterDataTable, key: CatalogKey) {
+  async function importRecords(
+    table: EditableMasterDataTable,
+    key: CatalogKey,
+  ) {
     const file = importFiles[key];
     if (!file) return;
-    setPendingId(`import-${key}`); setNotice(null);
-    const formData = new FormData(); formData.set("table", table); formData.set("file", file);
+    setPendingId(`import-${key}`);
+    setNotice(null);
+    const formData = new FormData();
+    formData.set("table", table);
+    formData.set("file", file);
     const result = await importMasterDataAction(formData);
-    setPendingId(null); setNotice({ kind: result.status === "success" ? "success" : "error", message: result.message });
-    if (result.status === "success") { setImportFiles((current) => ({ ...current, [key]: undefined })); router.refresh(); }
+    setPendingId(null);
+    setNotice({
+      kind: result.status === "success" ? "success" : "error",
+      message: result.message,
+    });
+    if (result.status === "success") {
+      setImportFiles((current) => ({ ...current, [key]: undefined }));
+      router.refresh();
+    }
   }
 
   return (
@@ -200,12 +215,37 @@ export function MasterDataList({
               </div>
               {canManage && section.table ? (
                 <div className="bg-muted/20 flex flex-col gap-2 border-t px-4 py-3 sm:flex-row sm:items-center sm:px-5">
-                  <a className="text-primary text-sm font-medium hover:underline" href={`/api/master-data/template.xlsx?table=${section.table}&locale=${locale}`}>
+                  <a
+                    className="text-primary text-sm font-medium hover:underline"
+                    href={`/api/master-data/template.xlsx?table=${section.table}&locale=${locale}`}
+                  >
                     {messages.settings.downloadTemplate}
                   </a>
-                  <Input type="file" accept=".xlsx" className="h-9 max-w-xs text-xs" onChange={(event) => setImportFiles((current) => ({ ...current, [section.key]: event.target.files?.[0] }))} />
-                  <Button type="button" size="sm" disabled={!importFiles[section.key] || pendingId === `import-${section.key}`} onClick={() => importRecords(section.table!, section.key)}>
-                    {pendingId === `import-${section.key}` ? <LoaderCircle className="animate-spin" /> : <Plus />}
+                  <Input
+                    type="file"
+                    accept=".xlsx"
+                    className="h-9 max-w-xs text-xs"
+                    onChange={(event) =>
+                      setImportFiles((current) => ({
+                        ...current,
+                        [section.key]: event.target.files?.[0],
+                      }))
+                    }
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={
+                      !importFiles[section.key] ||
+                      pendingId === `import-${section.key}`
+                    }
+                    onClick={() => importRecords(section.table!, section.key)}
+                  >
+                    {pendingId === `import-${section.key}` ? (
+                      <LoaderCircle className="animate-spin" />
+                    ) : (
+                      <Plus />
+                    )}
                     {messages.settings.import}
                   </Button>
                 </div>
@@ -216,125 +256,129 @@ export function MasterDataList({
                   onSubmit={(event) => submitRecord(event, section.table!)}
                 >
                   {(() => {
-                    const examples = messages.masterData.examples[section.table];
+                    const examples =
+                      messages.masterData.examples[section.table];
 
                     return (
                       <>
-                  <div>
-                    <Label htmlFor={`${section.key}-code`}>
-                      {messages.masterData.code}
-                    </Label>
-                    <Input
-                      id={`${section.key}-code`}
-                      name="code"
-                      required
-                      className="mt-2"
-                      placeholder={examples.code}
-                      aria-describedby={`${section.key}-code-help`}
-                    />
-                    <p
-                      id={`${section.key}-code-help`}
-                      className="text-muted-foreground mt-1 text-xs"
-                    >
-                      {section.table === "fiscal_years"
-                        ? messages.settings.fiscalYearCodeHelp
-                        : messages.settings.codeHelp}
-                    </p>
-                  </div>
-                  <div>
-                    <Label htmlFor={`${section.key}-name-en`}>
-                      {messages.masterData.nameEnglish}
-                    </Label>
-                    <Input
-                      id={`${section.key}-name-en`}
-                      name="nameEn"
-                      required
-                      className="mt-2"
-                      placeholder={examples.nameEn}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`${section.key}-name-th`}>
-                      {messages.masterData.nameThai}
-                    </Label>
-                    <Input
-                      id={`${section.key}-name-th`}
-                      name="nameTh"
-                      required
-                      className="mt-2"
-                      placeholder={examples.nameTh}
-                    />
-                  </div>
-                  {section.table === "fiscal_years" ? (
-                    <>
-                      <div>
-                        <Label htmlFor="fiscal-year-value">
-                          {messages.settings.year}
-                        </Label>
-                        <Input
-                          id="fiscal-year-value"
-                          name="year"
-                          type="number"
-                          min="2000"
-                          max="2200"
-                          required
-                          className="mt-2"
-                          placeholder={examples.year}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="fiscal-start">
-                          {messages.settings.startsOn}
-                        </Label>
-                        <Input
-                          id="fiscal-start"
-                          name="startsOn"
-                          type="date"
-                          required
-                          className="mt-2"
-                          aria-describedby="fiscal-date-help"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="fiscal-end">
-                          {messages.settings.endsOn}
-                        </Label>
-                        <Input
-                          id="fiscal-end"
-                          name="endsOn"
-                          type="date"
-                          required
-                          className="mt-2"
-                          aria-describedby="fiscal-date-help"
-                        />
-                      </div>
-                      <p
-                        id="fiscal-date-help"
-                        className="text-muted-foreground text-xs sm:col-span-2 lg:col-span-3"
-                      >
-                        {messages.settings.fiscalYearDateHelp}
-                      </p>
-                    </>
-                  ) : null}
-                  <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
-                    <Button type="submit" disabled={pendingId === "create"}>
-                      {pendingId === "create" ? (
-                        <LoaderCircle className="animate-spin" />
-                      ) : (
-                        <Plus />
-                      )}
-                      {pendingId === "create"
-                        ? messages.settings.saving
-                        : messages.settings.add}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => setCreating(null)}
-                    >
-                      {messages.settings.cancel}
-                    </Button>
-                  </div>
+                        <div>
+                          <Label htmlFor={`${section.key}-code`}>
+                            {messages.masterData.code}
+                          </Label>
+                          <Input
+                            id={`${section.key}-code`}
+                            name="code"
+                            required
+                            className="mt-2"
+                            placeholder={examples.code}
+                            aria-describedby={`${section.key}-code-help`}
+                          />
+                          <p
+                            id={`${section.key}-code-help`}
+                            className="text-muted-foreground mt-1 text-xs"
+                          >
+                            {section.table === "fiscal_years"
+                              ? messages.settings.fiscalYearCodeHelp
+                              : messages.settings.codeHelp}
+                          </p>
+                        </div>
+                        <div>
+                          <Label htmlFor={`${section.key}-name-en`}>
+                            {messages.masterData.nameEnglish}
+                          </Label>
+                          <Input
+                            id={`${section.key}-name-en`}
+                            name="nameEn"
+                            required
+                            className="mt-2"
+                            placeholder={examples.nameEn}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`${section.key}-name-th`}>
+                            {messages.masterData.nameThai}
+                          </Label>
+                          <Input
+                            id={`${section.key}-name-th`}
+                            name="nameTh"
+                            required
+                            className="mt-2"
+                            placeholder={examples.nameTh}
+                          />
+                        </div>
+                        {section.table === "fiscal_years" ? (
+                          <>
+                            <div>
+                              <Label htmlFor="fiscal-year-value">
+                                {messages.settings.year}
+                              </Label>
+                              <Input
+                                id="fiscal-year-value"
+                                name="year"
+                                type="number"
+                                min="2000"
+                                max="2200"
+                                required
+                                className="mt-2"
+                                placeholder={examples.year}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="fiscal-start">
+                                {messages.settings.startsOn}
+                              </Label>
+                              <Input
+                                id="fiscal-start"
+                                name="startsOn"
+                                type="date"
+                                required
+                                className="mt-2"
+                                aria-describedby="fiscal-date-help"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="fiscal-end">
+                                {messages.settings.endsOn}
+                              </Label>
+                              <Input
+                                id="fiscal-end"
+                                name="endsOn"
+                                type="date"
+                                required
+                                className="mt-2"
+                                aria-describedby="fiscal-date-help"
+                              />
+                            </div>
+                            <p
+                              id="fiscal-date-help"
+                              className="text-muted-foreground text-xs sm:col-span-2 lg:col-span-3"
+                            >
+                              {messages.settings.fiscalYearDateHelp}
+                            </p>
+                          </>
+                        ) : null}
+                        <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
+                          <Button
+                            type="submit"
+                            disabled={pendingId === "create"}
+                          >
+                            {pendingId === "create" ? (
+                              <LoaderCircle className="animate-spin" />
+                            ) : (
+                              <Plus />
+                            )}
+                            {pendingId === "create"
+                              ? messages.settings.saving
+                              : messages.settings.add}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setCreating(null)}
+                          >
+                            {messages.settings.cancel}
+                          </Button>
+                        </div>
                       </>
                     );
                   })()}
