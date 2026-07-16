@@ -12,10 +12,20 @@ Install Node 22 or newer, then run `nvm use` in this repository. `.nvmrc` and `p
 - Supabase CLI installed locally in `devDependencies` and initialized at `supabase/config.toml`.
 - Phase 0 through Phase 5 migrations, local and production-safe seed data, and database behavior tests added.
 - `.env.example` added without privileged credentials.
+- Git remote `origin` connected to `https://github.com/UNRPP/ProcureFlow.git`.
+- Hosted Supabase project `ProcureFlow` (`rsnjvjfufftzduhwnihr`) linked at the repository root with the `procureflow` CLI profile.
+- All seven migrations and the production-safe baseline seed applied on 16 July 2026.
+- Local `.env.local` configured with the hosted browser-safe URL and publishable key; the file remains ignored by Git.
+- Remote checks confirmed 4 roles, 3 work categories, 6 document types, RLS on every public business table, and no anonymously executable `SECURITY DEFINER` functions.
+- Node.js 22.23.1 installed through nvm; lint, typecheck, 122 tests, and the production build pass on Node 22.
+- Vercel project `poositrue-2373s-projects/procureflow` linked to GitHub with all five environment variables configured for Development, Preview, and Production.
+- First Vercel deployment available at `https://procureflow-ivory.vercel.app`.
+- Supabase Auth Site URL and redirect allow-list configured for the Vercel deployment, Vercel previews, and localhost; public sign-up is disabled.
+- The linked Supabase project is designated as production. No demo users or fake case seed was applied; one confirmed, active first administrator was bootstrapped with exactly the `super_admin` role.
 
-No Git remote was added. The implementation remains uncommitted because no commit authorization or remote URL was provided; only the scaffolder's generated baseline commit exists.
+The new function-permission hardening migration and its tests remain uncommitted and unpushed pending an intentional Git review.
 
-## 1. Select Node 22 and install Docker
+## 1. Select Node 22
 
 ```bash
 nvm install 22
@@ -23,9 +33,9 @@ nvm use
 npm install
 ```
 
-Then install/start Docker Desktop and continue with local Supabase.
+Docker is optional and is not needed to use the linked hosted Supabase project. Install/start Docker Desktop only if you want the isolated local database workflow below.
 
-Live database execution was intentionally deferred. Install and start Docker Desktop (or a compatible runtime) when ready, then run:
+For optional local acceptance, install and start Docker Desktop (or a compatible runtime), then run:
 
 ```bash
 npm run supabase:start
@@ -51,7 +61,7 @@ npm run test:db
 `db:reset` loads nine procurement cases with category details in addition to
 the demo users, workflows, collaboration history, reminders, and master data.
 
-The checked-in `.env.local` placeholder is ignored by Git and is only sufficient for static build verification. Replace it before signing in.
+The hosted browser-safe values are now present in the ignored `.env.local`. Never commit this file.
 
 ## 2. Test accounts and seed data
 
@@ -80,15 +90,16 @@ The seed also creates:
 
 Do not run `supabase/seed.sql` against production. Create real users through a controlled administrator process and keep public sign-up disabled unless the security model is deliberately changed.
 
-## 3. Connect a hosted Supabase project
+## 3. Hosted Supabase next actions
 
-Create a project in the Supabase dashboard, then authenticate and link the repository:
+The repository is already connected. When using the named account explicitly, run:
 
 ```bash
-npx supabase login
-npx supabase link --project-ref <your-project-ref>
-npx supabase db push
+npx supabase projects list --profile procureflow
+npx supabase migration list --profile procureflow
 ```
+
+Supabase CLI 2.109.0 has a named-profile bug for some `db` subcommands. The project link is valid; upgrade the CLI after 2.109.1 or later is adopted, rather than logging out of the other Supabase account.
 
 Before production use:
 
@@ -111,28 +122,28 @@ Never expose `SUPABASE_SERVICE_ROLE_KEY` to the browser or add it to a `NEXT_PUB
 The scheduled notification route additionally requires server-only
 `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` values. See `ENVIRONMENT.md`.
 
-## 4. Add a Git remote and create the first commit
+## 4. Review and publish the connected Git repository
 
-When the remote repository exists:
+The remote exists and is currently empty. Review and publish when ready:
 
 ```bash
-git remote add origin <repository-url>
 git add .
 git status
-git commit -m "feat: complete ProcureFlow procurement MVP"
+git commit -m "fix(db): restrict hosted function execution"
 git push -u origin main
 ```
 
 Review `git status` before committing so generated local files or credentials are not included.
 
-## 5. Configure Vercel after a hosted backend exists
+## 5. Validate the connected Vercel deployment
 
-1. Import the Git repository into Vercel.
-2. Add the three public variables and the two server-only cron variables for Preview and Production.
-3. Add each Vercel preview/production callback URL to Supabase Auth.
-4. Run `npm run check` locally and confirm the Vercel build passes.
-5. Verify sign-in, sign-out, English/Thai persistence, and dark/light mode in Preview.
-6. Run RLS, Storage, Playwright, workbook, and restore tests against a non-production Supabase project before promotion.
+The project, GitHub connection, encrypted environment variables, hosted build, and Supabase Auth redirects are configured.
+
+1. Sign in with the bootstrapped administrator and verify sign-out, English/Thai persistence, and dark/light mode.
+2. Create approved production master data and additional named users through the controlled administrator process.
+3. Configure a custom domain if required, then update both Vercel `NEXT_PUBLIC_SITE_URL` and Supabase Auth URLs.
+4. Configure the Vercel cron schedule for `/api/cron/notifications` after the desired reminder frequency is approved.
+5. Run RLS, Storage, Playwright, workbook, and restore tests against a non-production Supabase project before wider use.
 
 ## 6. Product decisions still required
 

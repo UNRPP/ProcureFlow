@@ -1,5 +1,5 @@
 begin;
-select plan(6);
+select plan(10);
 
 select ok(
   not has_schema_privilege('anon', 'public', 'CREATE'),
@@ -23,6 +23,26 @@ select ok(
     'EXECUTE'
   ),
   'authenticated users cannot invoke scheduled notification generation'
+);
+
+select ok(
+  not has_function_privilege('anon', 'public.activate_case_stage(uuid,uuid,integer,text,text,uuid)', 'EXECUTE'),
+  'anon cannot invoke internal workflow activation'
+);
+
+select ok(
+  not has_function_privilege('authenticated', 'public.activate_case_stage(uuid,uuid,integer,text,text,uuid)', 'EXECUTE'),
+  'authenticated users cannot invoke internal workflow activation directly'
+);
+
+select ok(
+  has_function_privilege('authenticated', 'public.start_case_workflow(uuid,uuid)', 'EXECUTE'),
+  'authenticated users can invoke the authorized workflow start RPC'
+);
+
+select ok(
+  has_function_privilege('service_role', 'public.generate_procurement_notifications(timestamptz)', 'EXECUTE'),
+  'service role can invoke scheduled notification generation'
 );
 
 select ok(

@@ -678,6 +678,10 @@ export type Database = {
         Args: { required_codes: string[] };
         Returns: boolean;
       };
+      import_master_data_batch: {
+        Args: { target_table: string; import_rows: Record<string, unknown>[] };
+        Returns: number;
+      };
       is_active_user: {
         Args: Record<string, never>;
         Returns: boolean;

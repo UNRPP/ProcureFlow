@@ -6,8 +6,10 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const requestedNext = requestUrl.searchParams.get("next");
-  const next =
-    requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+  const isRecovery = requestUrl.searchParams.get("type") === "recovery";
+  const next = isRecovery
+    ? "/reset-password"
+    : requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
       ? requestedNext
       : "/dashboard";
 

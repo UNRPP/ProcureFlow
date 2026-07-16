@@ -1,6 +1,8 @@
-# Deferred database acceptance
+# Database acceptance status
 
-The application is implemented through Phase 5, but live Supabase execution was explicitly deferred. Complete this checklist when Docker or a hosted non-production project is available.
+The application is implemented through Phase 5. On 16 July 2026, the repository was linked to the hosted Supabase project `ProcureFlow` (`rsnjvjfufftzduhwnihr`), all seven migrations were applied, and the production-safe baseline seed was loaded. The remote migration ledger matches the repository, every public business table has RLS enabled, and anonymous execution of `SECURITY DEFINER` functions is blocked.
+
+Docker is not required for the hosted workflow. The local acceptance section remains optional and requires Docker or another compatible container runtime.
 
 ## Local acceptance
 
@@ -24,10 +26,10 @@ Verify all migrations apply in order, the private `case-documents` bucket exists
 
 ## Hosted staging acceptance
 
-1. Create a disposable Supabase project and disable public sign-up.
-2. Link with `npx supabase link --project-ref <ref>` and apply with `npx supabase db push`.
-3. Use demo seed data only in this disposable acceptance project, never production.
-4. Deploy a Vercel Preview with staging environment values and Auth redirect URLs.
+1. The linked `ProcureFlow` project is designated as production. Never load `supabase/seed.sql` into it.
+2. Public sign-up is disabled, and Auth URLs are configured for `https://procureflow-ivory.vercel.app`, Vercel previews, and localhost.
+3. One confirmed, active first administrator has been bootstrapped with exactly the `super_admin` role.
+4. The Vercel project and first hosted deployment are configured; complete administrator sign-in acceptance before creating approved master data or additional users.
 5. Run behavioral RLS, Storage, role, locale, workbook, cron, and Playwright tests.
 6. Capture query plans at production-like volumes and confirm the Phase 5 indexes are used where selective.
 7. Re-run unauthorized download tests after signed URLs expire.

@@ -8,7 +8,7 @@ import { getI18n } from "@/lib/i18n/server";
 import type { SignInErrorCode } from "@/server/actions/auth";
 
 type SignInPageProps = {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string; reset?: string }>;
 };
 
 function getInitialError(
@@ -90,6 +90,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             <SignInForm
               messages={messages.auth}
               initialError={getInitialError(params.error)}
+              passwordResetComplete={params.reset === "success"}
               nextPath={getSafeNextPath(params.next)}
             />
           </div>

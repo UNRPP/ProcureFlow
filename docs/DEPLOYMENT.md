@@ -29,7 +29,8 @@ The Phase 4 migration creates the private `case-documents` bucket and policies. 
 2. Require HTTPS and verify the security headers, including HSTS on the production Vercel environment.
 3. Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin and redeploy so the Content Security Policy is rebuilt.
 4. Set the Supabase Auth site URL and exact allowed callback URLs for the production domain. Remove obsolete preview callbacks.
-5. Verify sign-in, sign-out, session refresh, language persistence, password recovery, and inactive-user behavior.
+5. Use `/forgot-password` to initiate password recovery. The application requests a recovery redirect through `/auth/callback?next=/reset-password`, which exchanges the one-time code before allowing a new password.
+6. Verify sign-in, sign-out, session refresh, language persistence, password recovery, and inactive-user behavior.
 
 ## 4. Release gate
 

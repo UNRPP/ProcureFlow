@@ -50,6 +50,22 @@
     "emailPlaceholder": "name@hospital.org",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordTitle": "Reset your password",
+    "forgotPasswordDescription": "Enter your email and we will send a secure password reset link.",
+    "sendResetLink": "Send reset link",
+    "sendingResetLink": "Sending reset link…",
+    "resetLinkSent": "If this email belongs to an active account, a password reset link has been sent.",
+    "resetPasswordTitle": "Choose a new password",
+    "resetPasswordDescription": "Use a new password with at least 12 characters.",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Enter a new password",
+    "confirmPassword": "Confirm new password",
+    "confirmPasswordPlaceholder": "Re-enter the new password",
+    "updatePassword": "Update password",
+    "updatingPassword": "Updating password…",
+    "passwordUpdated": "Your password has been updated. Sign in with your new password.",
+    "backToSignIn": "Back to sign in",
     "submit": "Sign in",
     "submitting": "Signing in…",
     "demoTitle": "Local demo account",
@@ -61,7 +77,9 @@
       "invalidCredentials": "The email or password is incorrect.",
       "inactiveAccount": "This account is inactive. Contact an administrator.",
       "serviceUnavailable": "Authentication is unavailable. Confirm the Supabase environment settings and try again.",
-      "callbackFailed": "The sign-in link could not be verified. Please try again."
+      "callbackFailed": "The sign-in link could not be verified. Please try again.",
+      "invalidRecoverySession": "This password reset link is invalid or has expired. Request a new link.",
+      "passwordMismatch": "The new passwords do not match."
     }
   },
   "dashboard": {
@@ -621,6 +639,8 @@
     "reactivate": "Reactivate",
     "saving": "Saving…",
     "codeHelp": "Use a stable lowercase machine code with underscores.",
+    "fiscalYearCodeHelp": "Use FY followed by the fiscal year, for example FY2026.",
+    "fiscalYearDateHelp": "Example: fiscal year 2026 runs from 2025-10-01 to 2026-09-30.",
     "startsOn": "Starts on",
     "endsOn": "Ends on",
     "year": "Year",
@@ -629,7 +649,12 @@
     "saveFailed": "Master data could not be updated.",
     "confirmArchive": "Archive this record? It will remain visible on existing cases.",
     "createTitle": "Create master-data record",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "downloadTemplate": "Download Excel template",
+    "import": "Import workbook",
+    "importInvalid": "Use the downloaded template and provide up to 500 complete valid rows.",
+    "importFailed": "The import could not be completed. No rows were added.",
+    "imported": "Imported {count} master-data records."
   },
   "masterData": {
     "workCategories": "Work categories",
@@ -645,7 +670,45 @@
     "nameThai": "Thai name",
     "status": "Status",
     "active": "Active",
-    "archived": "Archived"
+    "archived": "Archived",
+    "examples": {
+      "departments": {
+        "code": "e.g. surgery_department",
+        "nameEn": "e.g. Surgery Department",
+        "nameTh": "e.g. แผนกศัลยกรรม",
+        "year": "e.g. 2026"
+      },
+      "budget_categories": {
+        "code": "e.g. capital_equipment",
+        "nameEn": "e.g. Capital Equipment",
+        "nameTh": "e.g. ครุภัณฑ์",
+        "year": "e.g. 2026"
+      },
+      "budget_sources": {
+        "code": "e.g. government_budget",
+        "nameEn": "e.g. Government Budget",
+        "nameTh": "e.g. งบประมาณแผ่นดิน",
+        "year": "e.g. 2026"
+      },
+      "procurement_types": {
+        "code": "e.g. open_tender",
+        "nameEn": "e.g. Open Tender",
+        "nameTh": "e.g. ประกวดราคาอิเล็กทรอนิกส์",
+        "year": "e.g. 2026"
+      },
+      "fiscal_years": {
+        "code": "e.g. FY2026",
+        "nameEn": "e.g. FY 2026",
+        "nameTh": "e.g. ปีงบประมาณ 2569",
+        "year": "e.g. 2026"
+      },
+      "document_types": {
+        "code": "e.g. technical_specification",
+        "nameEn": "e.g. Technical Specification",
+        "nameTh": "e.g. ข้อกำหนดคุณลักษณะ",
+        "year": "e.g. 2026"
+      }
+    }
   },
   "roles": {
     "super_admin": "Super administrator",

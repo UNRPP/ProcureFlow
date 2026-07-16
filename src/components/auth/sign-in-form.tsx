@@ -1,6 +1,7 @@
 "use client";
 
 import { LockKeyhole, Mail } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -19,10 +20,12 @@ const initialState: SignInState = {};
 export function SignInForm({
   messages,
   initialError,
+  passwordResetComplete = false,
   nextPath,
 }: {
   messages: Messages["auth"];
   initialError?: SignInErrorCode;
+  passwordResetComplete?: boolean;
   nextPath: string;
 }) {
   const [state, formAction, pending] = useActionState(signIn, {
@@ -36,6 +39,11 @@ export function SignInForm({
       {state.error ? (
         <Alert variant="destructive">
           <AlertDescription>{messages.errors[state.error]}</AlertDescription>
+        </Alert>
+      ) : null}
+      {passwordResetComplete ? (
+        <Alert>
+          <AlertDescription>{messages.passwordUpdated}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -70,6 +78,15 @@ export function SignInForm({
             className="bg-card h-11 pl-10"
           />
         </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Link
+          className="text-primary text-sm font-medium hover:underline"
+          href="/forgot-password"
+        >
+          {messages.forgotPassword}
+        </Link>
       </div>
 
       <Button

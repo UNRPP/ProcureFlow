@@ -14,6 +14,13 @@ const hardening = readFileSync(
   resolve(migrationsDirectory, "20260715200000_phase5_hardening.sql"),
   "utf8",
 ).toLowerCase();
+const functionPermissions = readFileSync(
+  resolve(
+    migrationsDirectory,
+    "20260716090000_phase5_function_permissions.sql",
+  ),
+  "utf8",
+).toLowerCase();
 
 const createdBusinessTables = [
   ...migrations.matchAll(/create table public\.([a-z0-9_]+)/g),
@@ -39,5 +46,23 @@ describe("Phase 5 database hardening", () => {
     expect(hardening).toContain("procurement_cases_open_target_idx");
     expect(hardening).toContain("case_responsibility_intervals_period_idx");
     expect(hardening).toContain("case_documents_requirement_lookup_idx");
+  });
+
+  it("removes broad API function grants and restores only intended RPC access", () => {
+    expect(functionPermissions).toContain(
+      "revoke execute on all functions in schema public",
+    );
+    expect(functionPermissions).toContain(
+      "from public, anon, authenticated, service_role",
+    );
+    expect(functionPermissions).toContain(
+      "grant execute on function public.start_case_workflow(uuid, uuid) to authenticated",
+    );
+    expect(functionPermissions).toContain(
+      "grant execute on function public.generate_procurement_notifications(timestamptz) to service_role",
+    );
+    expect(functionPermissions).not.toContain(
+      "grant execute on function public.activate_case_stage",
+    );
   });
 });

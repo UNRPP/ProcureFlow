@@ -50,6 +50,22 @@
     "emailPlaceholder": "name@hospital.org",
     "password": "รหัสผ่าน",
     "passwordPlaceholder": "กรอกรหัสผ่าน",
+    "forgotPassword": "ลืมรหัสผ่าน?",
+    "forgotPasswordTitle": "ตั้งรหัสผ่านใหม่",
+    "forgotPasswordDescription": "กรอกอีเมลของคุณ แล้วเราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ที่ปลอดภัยให้",
+    "sendResetLink": "ส่งลิงก์ตั้งรหัสผ่านใหม่",
+    "sendingResetLink": "กำลังส่งลิงก์…",
+    "resetLinkSent": "หากอีเมลนี้เป็นบัญชีที่ใช้งานอยู่ ระบบได้ส่งลิงก์ตั้งรหัสผ่านใหม่แล้ว",
+    "resetPasswordTitle": "เลือกรหัสผ่านใหม่",
+    "resetPasswordDescription": "ใช้รหัสผ่านใหม่ที่มีอย่างน้อย 12 ตัวอักษร",
+    "newPassword": "รหัสผ่านใหม่",
+    "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่",
+    "confirmPassword": "ยืนยันรหัสผ่านใหม่",
+    "confirmPasswordPlaceholder": "กรอกรหัสผ่านใหม่อีกครั้ง",
+    "updatePassword": "อัปเดตรหัสผ่าน",
+    "updatingPassword": "กำลังอัปเดตรหัสผ่าน…",
+    "passwordUpdated": "อัปเดตรหัสผ่านแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่",
+    "backToSignIn": "กลับไปเข้าสู่ระบบ",
     "submit": "เข้าสู่ระบบ",
     "submitting": "กำลังเข้าสู่ระบบ…",
     "demoTitle": "บัญชีทดลองในเครื่อง",
@@ -61,7 +77,9 @@
       "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
       "inactiveAccount": "บัญชีนี้ถูกระงับ กรุณาติดต่อผู้ดูแลระบบ",
       "serviceUnavailable": "ระบบยืนยันตัวตนไม่พร้อมใช้งาน กรุณาตรวจสอบการตั้งค่า Supabase แล้วลองอีกครั้ง",
-      "callbackFailed": "ไม่สามารถตรวจสอบลิงก์เข้าสู่ระบบได้ กรุณาลองอีกครั้ง"
+      "callbackFailed": "ไม่สามารถตรวจสอบลิงก์เข้าสู่ระบบได้ กรุณาลองอีกครั้ง",
+      "invalidRecoverySession": "ลิงก์ตั้งรหัสผ่านใหม่นี้ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาขอลิงก์ใหม่",
+      "passwordMismatch": "รหัสผ่านใหม่ไม่ตรงกัน"
     }
   },
   "dashboard": {
@@ -621,6 +639,8 @@
     "reactivate": "เปิดใช้งานอีกครั้ง",
     "saving": "กำลังบันทึก…",
     "codeHelp": "ใช้รหัสระบบภาษาอังกฤษตัวพิมพ์เล็กและขีดล่าง",
+    "fiscalYearCodeHelp": "ใช้ FY ตามด้วยปีงบประมาณ เช่น FY2026",
+    "fiscalYearDateHelp": "ตัวอย่าง: ปีงบประมาณ 2026 เริ่ม 2025-10-01 และสิ้นสุด 2026-09-30",
     "startsOn": "วันที่เริ่มต้น",
     "endsOn": "วันที่สิ้นสุด",
     "year": "ปี",
@@ -629,7 +649,12 @@
     "saveFailed": "ไม่สามารถปรับปรุงข้อมูลหลัก",
     "confirmArchive": "เก็บข้อมูลนี้ถาวรหรือไม่ ข้อมูลจะยังแสดงในงานเดิม",
     "createTitle": "สร้างข้อมูลหลัก",
-    "cancel": "ยกเลิก"
+    "cancel": "ยกเลิก",
+    "downloadTemplate": "ดาวน์โหลดแม่แบบ Excel",
+    "import": "นำเข้าไฟล์",
+    "importInvalid": "ใช้แม่แบบที่ดาวน์โหลดและระบุข้อมูลที่ถูกต้องครบถ้วนไม่เกิน 500 แถว",
+    "importFailed": "ไม่สามารถนำเข้าข้อมูลได้ และไม่มีการเพิ่มข้อมูล",
+    "imported": "นำเข้าข้อมูลหลัก {count} รายการแล้ว"
   },
   "masterData": {
     "workCategories": "หมวดงาน",
@@ -645,7 +670,45 @@
     "nameThai": "ชื่อภาษาไทย",
     "status": "สถานะ",
     "active": "ใช้งาน",
-    "archived": "เก็บถาวร"
+    "archived": "เก็บถาวร",
+    "examples": {
+      "departments": {
+        "code": "เช่น surgery_department",
+        "nameEn": "เช่น Surgery Department",
+        "nameTh": "เช่น แผนกศัลยกรรม",
+        "year": "เช่น 2026"
+      },
+      "budget_categories": {
+        "code": "เช่น capital_equipment",
+        "nameEn": "เช่น Capital Equipment",
+        "nameTh": "เช่น ครุภัณฑ์",
+        "year": "เช่น 2026"
+      },
+      "budget_sources": {
+        "code": "เช่น government_budget",
+        "nameEn": "เช่น Government Budget",
+        "nameTh": "เช่น งบประมาณแผ่นดิน",
+        "year": "เช่น 2026"
+      },
+      "procurement_types": {
+        "code": "เช่น open_tender",
+        "nameEn": "เช่น Open Tender",
+        "nameTh": "เช่น ประกวดราคาอิเล็กทรอนิกส์",
+        "year": "เช่น 2026"
+      },
+      "fiscal_years": {
+        "code": "เช่น FY2026",
+        "nameEn": "เช่น FY 2026",
+        "nameTh": "เช่น ปีงบประมาณ 2569",
+        "year": "เช่น 2026"
+      },
+      "document_types": {
+        "code": "เช่น technical_specification",
+        "nameEn": "เช่น Technical Specification",
+        "nameTh": "เช่น ข้อกำหนดคุณลักษณะ",
+        "year": "เช่น 2026"
+      }
+    }
   },
   "roles": {
     "super_admin": "ผู้ดูแลระบบสูงสุด",

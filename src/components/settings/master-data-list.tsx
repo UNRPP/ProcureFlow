@@ -13,6 +13,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Messages } from "@/lib/i18n/messages";
 import {
   createMasterDataAction,
+  importMasterDataAction,
   setMasterDataActiveAction,
   type MasterDataInput,
 } from "@/server/actions/master-data";
@@ -20,10 +21,18 @@ import type { MasterDataCatalog } from "@/server/queries/master-data";
 import type { MasterDataRecord } from "@/types/database";
 
 type CatalogKey = keyof MasterDataCatalog;
+type MasterDataSectionMessageKey =
+  | "workCategories"
+  | "departments"
+  | "budgetCategories"
+  | "budgetSources"
+  | "procurementTypes"
+  | "fiscalYears"
+  | "documentTypes";
 
 const sections: {
   key: CatalogKey;
-  messageKey: keyof Messages["masterData"];
+  messageKey: MasterDataSectionMessageKey;
   table?: EditableMasterDataTable;
 }[] = [
   { key: "workCategories", messageKey: "workCategories" },
@@ -70,6 +79,7 @@ export function MasterDataList({
   const router = useRouter();
   const [creating, setCreating] = useState<CatalogKey | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [importFiles, setImportFiles] = useState<Partial<Record<CatalogKey, File>>>({});
   const [notice, setNotice] = useState<{
     kind: "success" | "error";
     message: string;
@@ -130,6 +140,16 @@ export function MasterDataList({
     if (result.status === "success") router.refresh();
   }
 
+  async function importRecords(table: EditableMasterDataTable, key: CatalogKey) {
+    const file = importFiles[key];
+    if (!file) return;
+    setPendingId(`import-${key}`); setNotice(null);
+    const formData = new FormData(); formData.set("table", table); formData.set("file", file);
+    const result = await importMasterDataAction(formData);
+    setPendingId(null); setNotice({ kind: result.status === "success" ? "success" : "error", message: result.message });
+    if (result.status === "success") { setImportFiles((current) => ({ ...current, [key]: undefined })); router.refresh(); }
+  }
+
   return (
     <div>
       {notice ? (
@@ -178,11 +198,28 @@ export function MasterDataList({
                   ) : null}
                 </div>
               </div>
+              {canManage && section.table ? (
+                <div className="bg-muted/20 flex flex-col gap-2 border-t px-4 py-3 sm:flex-row sm:items-center sm:px-5">
+                  <a className="text-primary text-sm font-medium hover:underline" href={`/api/master-data/template.xlsx?table=${section.table}&locale=${locale}`}>
+                    {messages.settings.downloadTemplate}
+                  </a>
+                  <Input type="file" accept=".xlsx" className="h-9 max-w-xs text-xs" onChange={(event) => setImportFiles((current) => ({ ...current, [section.key]: event.target.files?.[0] }))} />
+                  <Button type="button" size="sm" disabled={!importFiles[section.key] || pendingId === `import-${section.key}`} onClick={() => importRecords(section.table!, section.key)}>
+                    {pendingId === `import-${section.key}` ? <LoaderCircle className="animate-spin" /> : <Plus />}
+                    {messages.settings.import}
+                  </Button>
+                </div>
+              ) : null}
               {creating === section.key && section.table ? (
                 <form
                   className="bg-primary/3 grid gap-3 border-t border-b p-4 sm:grid-cols-2 lg:grid-cols-3"
                   onSubmit={(event) => submitRecord(event, section.table!)}
                 >
+                  {(() => {
+                    const examples = messages.masterData.examples[section.table];
+
+                    return (
+                      <>
                   <div>
                     <Label htmlFor={`${section.key}-code`}>
                       {messages.masterData.code}
@@ -192,9 +229,16 @@ export function MasterDataList({
                       name="code"
                       required
                       className="mt-2"
+                      placeholder={examples.code}
+                      aria-describedby={`${section.key}-code-help`}
                     />
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {messages.settings.codeHelp}
+                    <p
+                      id={`${section.key}-code-help`}
+                      className="text-muted-foreground mt-1 text-xs"
+                    >
+                      {section.table === "fiscal_years"
+                        ? messages.settings.fiscalYearCodeHelp
+                        : messages.settings.codeHelp}
                     </p>
                   </div>
                   <div>
@@ -206,6 +250,7 @@ export function MasterDataList({
                       name="nameEn"
                       required
                       className="mt-2"
+                      placeholder={examples.nameEn}
                     />
                   </div>
                   <div>
@@ -217,6 +262,7 @@ export function MasterDataList({
                       name="nameTh"
                       required
                       className="mt-2"
+                      placeholder={examples.nameTh}
                     />
                   </div>
                   {section.table === "fiscal_years" ? (
@@ -233,6 +279,7 @@ export function MasterDataList({
                           max="2200"
                           required
                           className="mt-2"
+                          placeholder={examples.year}
                         />
                       </div>
                       <div>
@@ -245,6 +292,7 @@ export function MasterDataList({
                           type="date"
                           required
                           className="mt-2"
+                          aria-describedby="fiscal-date-help"
                         />
                       </div>
                       <div>
@@ -257,8 +305,15 @@ export function MasterDataList({
                           type="date"
                           required
                           className="mt-2"
+                          aria-describedby="fiscal-date-help"
                         />
                       </div>
+                      <p
+                        id="fiscal-date-help"
+                        className="text-muted-foreground text-xs sm:col-span-2 lg:col-span-3"
+                      >
+                        {messages.settings.fiscalYearDateHelp}
+                      </p>
                     </>
                   ) : null}
                   <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
@@ -280,6 +335,9 @@ export function MasterDataList({
                       {messages.settings.cancel}
                     </Button>
                   </div>
+                      </>
+                    );
+                  })()}
                 </form>
               ) : null}
               {records.length === 0 ? (
